@@ -1,0 +1,18 @@
+# Infraestructura y Orquestación
+apache-airflow>=2.0.0
+apache-airflow-providers-ssh
+
+# AWS y Almacenamiento (Boto3/Botocore)
+boto3
+botocore
+
+# Procesamiento de Datos (Spark)
+pyspark==3.5.1
+
+# Streaming y Conectividad
+kafka-python
+requests
+python-dotenv
+
+# Utilidades
+pathlib

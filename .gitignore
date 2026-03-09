@@ -1,0 +1,19 @@
+# Variables de entorno
+.env
+.env.*
+
+# Logs
+*.log
+
+# Dependencias
+node_modules/
+venv/
+
+# Cache / temporales
+__pycache__/
+.cache/
+.tmp/
+
+# IDEs / editores
+.vscode/
+.idea/

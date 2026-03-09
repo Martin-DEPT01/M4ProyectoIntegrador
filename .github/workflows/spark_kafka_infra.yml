@@ -1,0 +1,72 @@
+name: Montaje Infraestructura Spark-Kafka
+
+on:
+  push:
+    branches: ["main", "maste"]
+  pull_request:
+    branches: ["main", "maste"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-versions: "3.9"
+
+      - name: Instalar dependencias de Python (Kafka)
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Levantar Kafka y Zookeeper (Docker Compose)
+        run: |
+          cat << EOF > docker-compose.yml
+          version: '3'
+          services:
+            zookeeper:
+              image: confluentinc/cp-zookeeper:7.6.0
+              ports:
+                - "2181:2181"
+              environment:
+                ZOOKEEPER_CLIENT_PORT: 2181
+                ZOOKEEPER_TICK_TIME: 2000
+
+            kafka:
+              image: confluentinc/cp-kafka:7.6.0
+              depends_on:
+                - zookeeper
+              ports:
+                - "9092:9092"
+              environment:
+                KAFKA_BROKER_ID: 1
+                KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+                KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+                KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+                KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          EOF
+          docker compose up -d
+
+          echo "15 segundos a que Kafka inicie completamente..."
+          sleep 15
+
+      - name: Levantar Apache Spark (Master)
+        run: |
+          docker network create spark-net
+          # Se usa la imagen oficial de Bitnami
+          docker run -d --net spark-net -p 8080:8080 -p 7077:7077 --name spark-master bitnami/spark:3.5.1
+
+          echo "10 segundos para inciar Spark..."
+          sleep 10
+
+      - name: Validar salud de la Infraestructura (Healthcheck)
+        run: |
+          echo "Contenedores corriendo actualmente el Runner:"
+          docker ps
+
+          nc -zv localhost 9092 || echo "Kafka no esta respondiendo"
+          nc -zv localhost 8080 || echo "Spark Master no esta respondiendo"
