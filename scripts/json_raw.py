@@ -33,7 +33,7 @@ def main():
                 historico_encontrado[lugar] = ruta_completa
 
                 print(f"Encontrado para {lugar}: {nombre_completo}")
-                s3_path = f"{lugar}/historico/{nombre_completo}"
+                s3_path = f"bronze/historicos/{nombre_completo}"
                 s3.upload_file(historico_encontrado[lugar], bucket_name, s3_path)
                 print(f"✅Archivo subido a s3://{bucket_name}/{s3_path}")
                 found = True
