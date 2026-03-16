@@ -13,7 +13,7 @@ def main():
     spark.sparkContext.setLogLevel("WARN")
 
     try:
-        print(">>> Extrayendo S3...")
+        print(">>> Iniciando extracción de datos de S3 bronze...")
         df_hist = spark.read.option("multiline", "true").json("s3a://m4-pi-medallion/bronze/historicos/")
         df_stream = spark.read.json("s3a://m4-pi-medallion/bronze/streams/")
 
@@ -37,6 +37,8 @@ def main():
             col("_airbyte_data.current.humidity").cast("integer").alias("humidity"), 
             col("_airbyte_data.current.wind_speed").cast("double").alias("wind_speed"))
 
+
+        print(">>> Ejecutando Unión de esquemas...")
         df_final = df_hist_norm.union(df_stream_norm).withColumn("timestamp", from_unixtime(col("dt"))) \
             .withColumn("year", year(col("timestamp"))) \
             .withColumn("month", month(col("timestamp"))) \
@@ -50,8 +52,11 @@ def main():
         print(f">>> Registros unificados: {total_rows}")
 
         output_path = "s3a://m4-pi-medallion/silver/weather_unified_parquet/"
+        print(f">>> Escribiendo a {output_path}")
+
         df_final.write.mode("overwrite").partitionBy("region", "year", "month").parquet(output_path)
         print(">>> ETL Finalizado exitosamente.")
+
     except Exception as e:
         print(f"ERROR: {str(e)}")
         sys.exit(1)

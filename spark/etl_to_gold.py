@@ -26,10 +26,11 @@ def main():
     CONV_KELVIN = 273.15       # Constante para convertir C a K
     
     try:
-        print(">>> Extrayendo S3 SILVER...")
+        print(">>> Iniciando extracción de datos de S3 silver...")
         df_weather_unified = spark.read.parquet("s3a://m4-pi-medallion/silver/weather_unified_parquet/")
 
         # agregamos la potencia solar instantanea por cada medicion horaria
+        print(">>> Ejecutando transformaciones y agregaciones...")
         df_result = (df_weather_unified
             .withColumn("potencia_solar_w", 
                 (col("uvi") * lit(100)) * lit(EFICIENCIA_PANEL) * 
@@ -51,6 +52,8 @@ def main():
         print(f">>> Registros procesados: {total_rows}")
 
         output_path = "s3a://m4-pi-medallion/gold/metrics/"
+        print(f">>> Escribiendo a {output_path}")
+        
         df_result.write.mode("overwrite").partitionBy("region", "year", "month").parquet(output_path)
         print(">>> ETL Finalizado exitosamente.")
     except Exception as e:
