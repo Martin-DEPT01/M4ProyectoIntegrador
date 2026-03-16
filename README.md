@@ -7,10 +7,10 @@ Este proyecto implementa una arquitectura de datos moderna (**Modern Data Stack*
 El ecosistema está desplegado sobre infraestructura de **AWS**, orquestado mediante **Apache Airflow** corriendo en contenedores **Docker** con transformaciones en **Apache Spark**. Para la parte de streaming se utilizaron conectores de **Airbyte** y scripts de **Python** para la carga inicial de los datos historicos.
 
 1.  **Ingesta (Extract):**
-    - **Pipeline Diario:** Consumo de API de clima (Openweather) con **Airbyte** -> Almacenamiento en **AWS S3** (JSON comprimido con GZ).
-    - **Historico:** Ingesta de datasets masivos de metricas historicas del clima (2024) de Patagonia y Riohacha -> Almacenamiento en **AWS S3** (formato JSON).
+    - **Pipeline Diario:** Consumo de API de clima (Openweather) con **Airbyte** por hora -> Almacenamiento en **AWS S3** (JSON comprimido con GZ).
+    - **Historico:** Ingesta de datasets masivos de metricas historicas del clima (2024/2025) de Patagonia y Riohacha -> Almacenamiento en **AWS S3** (formato JSON).
 2.  **Carga (Load):**
-    - Scripts de Spark extraen los archivos de S3 en batch para validar, consolidar con joins y desplegar en las capas silver y gold. Finalmente se consumen los datos desde **Amazon Athena**.
+    - Scripts de Spark extraen los archivos de S3 en batch para validar, consolidar con joins, transformar, agregar y desplegar en las capas silver y gold. Finalmente se consumen los datos desde **Amazon Athena**.
 3.  **Transformación (Transform - Spark):**
     - **Staging:** Limpieza, tipado y estandarización de datos.
     - **Core (Data Lake):** Uso de arquitectura medallon para separar las capas de procesado y de refinamiento de datos.
@@ -48,6 +48,7 @@ El ecosistema está desplegado sobre infraestructura de **AWS**, orquestado medi
 │   └── Riohacha_11_538415.json    	# Datos historicos de Riohacha
 ├── docs/
 │   ├── Documento Tecnico.docx     	# AVANCE1: especificaciones y decisiones tecnologicas
+│   ├── Evidencias de ejecucion.ipynb   # Evidencias Airbyte + Airflow
 │   ├── Preguntas de Negocio.txt
 │   └── Reporte Preguntas de Negocio.ipynb    #Prints de ejecucion y respuestas a las preguntas de negocio
 ├── scripts/
