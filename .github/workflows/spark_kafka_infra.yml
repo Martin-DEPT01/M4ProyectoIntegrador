@@ -2,9 +2,9 @@ name: Montaje Infraestructura Spark-Kafka
 
 on:
   push:
-    branches: ["main", "maste"]
+    branches: ["main", "master"]
   pull_request:
-    branches: ["main", "maste"]
+    branches: ["main", "master"]
 
 jobs:
   build-and-test:

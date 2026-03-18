@@ -39,7 +39,7 @@ def main():
 
 
         print(">>> Ejecutando Unión de esquemas...")
-        df_final = df_hist_norm.union(df_stream_norm).withColumn("timestamp", from_unixtime(col("dt"))) \
+        df_final = df_hist_norm.unionByName(df_stream_norm).withColumn("timestamp", from_unixtime(col("dt"))) \
             .withColumn("year", year(col("timestamp"))) \
             .withColumn("month", month(col("timestamp"))) \
             .withColumn("day", dayofmonth(col("timestamp"))) \

@@ -22,7 +22,6 @@ def main():
     # Parámetros calculo de POTENCIAL EOLICO
     COEF_POTENCIA_WIND = 0.40  # Eficiencia aerogenerador (40%)
     R_AIRE = 287.05            # Constante gas ideal aire seco
-    AREA_VIENTO = 1.0          # Por metro cuadrado de aspa
     CONV_KELVIN = 273.15       # Constante para convertir C a K
     
     try:
@@ -33,8 +32,10 @@ def main():
         print(">>> Ejecutando transformaciones y agregaciones...")
         df_result = (df_weather_unified
             .withColumn("potencia_solar_w", 
-                (col("uvi") * lit(100)) * lit(EFICIENCIA_PANEL) * 
-                (lit(1) - when(col("temp") > TEMP_STC, (col("temp") - TEMP_STC) * lit(COEF_TEMP)).otherwise(0)) * 
+                (col("uvi") * lit(100)) * 
+                lit(EFICIENCIA_PANEL) * 
+                (lit(1) - when(col("temp") > TEMP_STC, 
+                              (col("temp") - TEMP_STC) * lit(COEF_TEMP)).otherwise(0)) * 
                 lit(PERFORMANCE_RATIO)
             )
             .withColumn("potencial_eolico_w", 
@@ -47,7 +48,7 @@ def main():
             )
             .withColumn("potencial_renovable_total_w", col("potencia_solar_w") + col("potencial_eolico_w"))
         )
-        
+
         total_rows = df_result.count()
         print(f">>> Registros procesados: {total_rows}")
 
