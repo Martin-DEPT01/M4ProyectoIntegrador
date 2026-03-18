@@ -39,4 +39,4 @@ jobs:
       - name: 🗄️ Validar Consultas de Athena
         run: |
           # Validamos archivos .sql en la carpeta aws_athena/
-          sqlfluff lint aws_athena/ --dialect presto
+          sqlfluff lint aws_athena/ --dialect athena
