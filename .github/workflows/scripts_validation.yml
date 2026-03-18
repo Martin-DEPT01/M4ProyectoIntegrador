@@ -39,4 +39,4 @@ jobs:
       - name: 🗄️ Validar Consultas de Athena
         run: |
           # Validamos archivos .sql en la carpeta aws_athena/
-          sqlfluff lint aws_athena/ --dialect athena --ignore LT01,LT02,LT05,LT08,LT09,ST01,CP01
+          sqlfluff lint aws_athena/ --dialect athena --exclude-rules LT01,LT02,LT05,LT08,LT09,ST01,CP01
