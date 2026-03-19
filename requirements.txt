@@ -10,7 +10,6 @@ botocore
 pyspark==3.5.1
 
 # Streaming y Conectividad
-kafka-python
 requests
 python-dotenv
 
